@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08040a">
+<title>A surprise for Menna ❤️</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; overflow: hidden;
+    display: grid; place-items: center;
+    background: radial-gradient(ellipse at center, #24101d 0%, #0b060d 48%, #030204 100%);
+    color: #ffe5ef; font-family: Georgia, "Times New Roman", serif;
+  }
+  .glow {
+    position: fixed; width: 65vmin; height: 65vmin; border-radius: 50%;
+    background: #ff3f8e; filter: blur(100px); opacity: .12; pointer-events: none;
+  }
+  main {
+    position: relative; z-index: 1; width: min(94vw, 700px);
+    min-height: 95vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 22px 12px 58px;
+  }
+  .eyebrow { color: #e9a7c1; letter-spacing: .28em; text-transform: uppercase; font: 11px Arial, sans-serif; }
+  h1 { margin: 12px 0 0; font-size: clamp(34px, 9vw, 62px); font-weight: 400; color: #ffe3ee; text-shadow: 0 0 22px #ff4c91; }
+  canvas { width: min(88vw, 540px); height: min(55vh, 430px); margin: -2px 0 -4px; }
+  .sub { margin: 0 0 23px; color: #d9b7c5; font: 14px Arial, sans-serif; letter-spacing: .04em; }
+  button {
+    border: 1px solid #f5a7c5; border-radius: 999px; padding: 14px 27px;
+    background: linear-gradient(135deg, #ff77aa, #b82d70); color: white;
+    font-size: 15px; letter-spacing: .04em; cursor: pointer;
+    box-shadow: 0 0 24px #e83e8555; transition: transform .2s, box-shadow .2s;
+  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 0 32px #ff5d9b99; }
+  .message {
+    max-width: 440px; margin-top: 22px; padding: 0 14px;
+    color: #ffe0eb; font: 16px/1.8 Arial, sans-serif;
+    opacity: 0; transform: translateY(10px); transition: .7s ease;
+    pointer-events: none;
+  }
+  .message.show { opacity: 1; transform: translateY(0); }
+  .footer { position: fixed; bottom: 16px; color: #b88b9d; font: 11px Arial, sans-serif; letter-spacing: .12em; }
+  .spark {
+    position: fixed; bottom: -20px; color: #ff9cbe; opacity: .75;
+    animation: floatUp linear forwards; pointer-events: none;
+  }
+  @keyframes floatUp { to { transform: translateY(-110vh) rotate(25deg); opacity: 0; } }
+  @media (max-height: 650px) { canvas { height: 42vh; } main { padding-top: 8px; } }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<main>
+  <div class="eyebrow">a little surprise for</div>
+  <h1>Menna <span aria-hidden="true">♡</span></h1>
+  <canvas id="heart"></canvas>
+  <p class="sub">A little heart, made of a thousand kind thoughts.</p>
+  <button id="reveal">Open your surprise ✨</button>
+  <div class="message" id="message">
+    Menna, أتمنى لكِ أيامًا مليانة فرحة وابتسامات وحاجات حلوة تستاهليها. خليكي دايمًا مبسوطة ومميزة ❤️
+  </div>
+</main>
+<div class="footer">MADE WITH CARE · JUST FOR YOU</div>
+<script>
+const canvas = document.getElementById("heart");
+const ctx = canvas.getContext("2d");
+const phrase = "I love you ♥";
+let w, h, dpr = Math.min(devicePixelRatio || 1, 2), phase = 0;
+function resize() {
+  const r = canvas.getBoundingClientRect(); w = r.width; h = r.height;
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener("resize", resize); resize();
+function point(t) {
+  return { x: 16*Math.sin(t)**3,
+    y: 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t) };
+}
+function draw() {
+  ctx.clearRect(0,0,w,h);
+  const scale = Math.min(w/39,h/34)*.88*(1+.035*Math.sin(phase));
+  const cx=w/2, cy=h/2+5;
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  for(let layer=0; layer<17; layer++) {
+    const shrink=1-layer*.025, count=56;
+    for(let i=0;i<count;i++) {
+      const t=i/count*Math.PI*2 + layer*.018;
+      const p=point(t);
+      ctx.font=`bold ${Math.max(5,Math.min(9,scale*.22))}px Arial`;
+      ctx.fillStyle=`rgba(255,${145+layer*3},${183+layer*2},${.95-layer*.025})`;
+      ctx.shadowColor="#ff4c91"; ctx.shadowBlur=5;
+      ctx.fillText(phrase,cx+p.x*scale*shrink,cy-p.y*scale*shrink);
+    }
+  }
+  ctx.shadowBlur=0; phase+=.045; requestAnimationFrame(draw);
+}
+draw();
+document.getElementById("reveal").addEventListener("click", () => {
+  document.getElementById("message").classList.add("show");
+  document.getElementById("reveal").textContent="A little more happiness for you ♥";
+  for(let i=0;i<22;i++) {
+    const s=document.createElement("span"); s.className="spark";
+    s.textContent=["♥","♡","✦"][i%3];
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=(12+Math.random()*18)+"px";
+    s.style.animationDuration=(4+Math.random()*4)+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),8500);
+  }
+});
+</script>
+</body>
+</html>
